@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Name — Computer Engineer</title>
+<title>Zexuan (Z) Wang — Computer Engineer</title>
+<meta name="description" content="Zexuan (Z) Wang — computer engineering master's student at UC Riverside, working at the intersection of hardware and software.">
+<meta name="color-scheme" content="dark">
 
 <!-- Loads two Google Fonts: Inter (regular text) and JetBrains Mono (the "code-looking" text, like nav links and labels) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,10 +30,11 @@
   --light-slate:   #a8b2d1;   /* slightly brighter than slate, for secondary text */
   --lightest-slate:#ccd6f6;   /* brightest of the three, used for headings */
   --white:         #e6f1ff;   /* off-white, used for your name/emphasis text */
-  --light-blue:         #70b5ff;   /* the accent color — links, highlights, hover states */
+  --light-blue:     #70b5ff;   /* the accent color — links, highlights, hover states */
+  --light-blue-tint: rgba(112, 181, 255, 0.10); /* faint accent wash for button hovers */
   --font-sans: 'Inter', sans-serif;              /* body/heading font */
   --font-mono: 'JetBrains Mono', monospace;      /* "code style" font for labels/nav */
-  --sidebar-width: 38%;       /* how wide the left sidebar is on large screens */
+  --sidebar-width: 30%;       /* how wide the left sidebar is on large screens */
 }
 
 /* ============================================================
@@ -63,11 +66,12 @@ body{
   *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
 }
 
-a{ color:var(--light-blue); text-decoration:none; }         /* all links: green, no underline by default */
+a{ color:var(--light-blue); text-decoration:none; }         /* all links: accent blue, no underline by default */
 ::selection{ background:var(--light-blue); color:var(--black); } /* highlight color when you select/drag over text */
 :focus-visible{ outline:2px solid var(--light-blue); outline-offset:3px; } /* visible outline when tabbing via keyboard */
 
-h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
+h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
+/* headings get a tighter line-height than the 1.5 used for body copy */
 
 .num{ color:var(--light-blue); font-family:var(--font-mono); font-weight:400; }
 /* the little "01.", "02." style numbers before section titles */
@@ -89,12 +93,13 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
 
 .sidebar{
   width:var(--sidebar-width);
-  max-width:480px;
+  min-width:280px;
+  max-width:400px;
   flex-shrink:0;
   position:sticky;        /* sticks in place while you scroll the main content */
   top:0;
   height:100vh;
-  padding:80px 48px 40px 0;
+  padding:80px 40px 40px 0;
   display:flex;
   flex-direction:column;
   justify-content:space-between; /* pushes top content up, social icons down */
@@ -110,7 +115,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
    content instead of side-by-side, and turn off the sticky sidebar. */
 @media (max-width:1080px){
   .page{ flex-direction:column; padding:0 24px; }
-  .sidebar{ position:relative; width:100%; max-width:none; height:auto; padding:48px 0 0; }
+  .sidebar{ position:relative; width:100%; min-width:0; max-width:none; height:auto; padding:48px 0 0; }
   .main{ padding:0 0 80px; }
   .sidebar-social{ flex-direction:row; }  /* social icons go horizontal instead of stacked */
   .sidebar-nav{ display:none; }           /* hide the section nav links on mobile */
@@ -119,13 +124,13 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
 /* ============================================================
    4. SIDEBAR CONTENT
 ============================================================ */
-.eyebrow-tag{ font-family:var(--font-mono); font-size:13px; color:var(--light-blue); }
 /* the small "Hi, my name is" line above your name */
+.eyebrow-tag{ font-family:var(--font-mono); font-size:13px; color:var(--light-blue); }
 
 .sidebar h1{
-  font-size:clamp(2rem, 5vw, 3rem);
-  /* clamp(min, preferred, max): font size scales with viewport width (5vw),
-     but never goes smaller than 2rem or bigger than 3rem. Good for responsive text. */
+  font-size:clamp(1.9rem, 3.4vw, 2.6rem);
+  /* clamp(min, preferred, max): font size scales with viewport width (3.4vw),
+     but never goes smaller than 1.9rem or bigger than 2.6rem. Good for responsive text. */
   margin-top:12px;
   color:var(--white);
 }
@@ -133,13 +138,25 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
   font-size:1.15rem;
   color:var(--lightest-slate);
   font-weight:500;
-  margin-top:4px;
+  line-height:1.35;   /* reads as a sentence, so looser than the heading default */
+  margin-top:6px;
 }
-.sidebar p{
+/* the intro paragraph only — .eyebrow-tag is also a <p> in the sidebar,
+   so this is scoped by id to avoid styling that line too */
+#sb-blurb{
   margin-top:18px;
-  max-width:38ch;   /* "ch" = width of the character "0". Limits line length for readability. */
+  max-width:34ch;   /* "ch" = width of the character "0". Limits line length for readability. */
   color:var(--slate);
   font-size:15px;
+}
+
+/* Stacked mode: the sidebar spans the full page width, so the name and blurb
+   should use that width instead of staying in a tall, narrow column. This has
+   to sit AFTER the rules above — a media query doesn't outrank source order. */
+@media (max-width:1080px){
+  .sidebar h1{ font-size:clamp(2rem, 6vw, 2.8rem); }
+  .sidebar h2{ font-size:1.25rem; }
+  #sb-blurb{ max-width:75ch; }
 }
 
 /* ---- section nav (About / Experience / Projects / etc.) ---- */
@@ -186,7 +203,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
   width:fit-content;   /* button only as wide as its text, not full width */
   transition:background 0.2s ease;
 }
-.resume-link:hover{ background:rgba(151, 211, 246, 0.08); } /* faint light blue fill on hover */
+.resume-link:hover{ background:var(--light-blue-tint); } /* faint accent fill on hover */
 
 /* ============================================================
    5. MAIN SECTIONS (shared styles for About/Experience/Projects/etc.)
@@ -235,11 +252,13 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
 }
 
 /* ---- Experience: tab buttons on the left, content on the right ---- */
-.exp-wrap{ display:flex; gap:0; }
+.exp-wrap{ display:flex; }
 .exp-tabs{
   display:flex; flex-direction:column;
   border-left:2px solid var(--lightest-black);
   min-width:140px;
+  max-width:210px;   /* long company names wrap instead of stretching the column */
+  flex-shrink:0;
 }
 .exp-tab{
   font-family:var(--font-mono); font-size:12.5px; text-align:left;
@@ -265,8 +284,11 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
    instead of a vertical list, since there's not enough width for both columns. */
 @media (max-width:600px){
   .exp-wrap{ flex-direction:column; }
-  .exp-tabs{ flex-direction:row; overflow-x:auto; border-left:none; border-bottom:2px solid var(--lightest-black);}
-  .exp-tab.active{ border-left-color:transparent; border-bottom-color:var(--light-blue);}
+  .exp-tabs{ flex-direction:row; overflow-x:auto; max-width:none; border-left:none; border-bottom:2px solid var(--lightest-black);}
+  /* keep each tab on one line so the strip scrolls sideways instead of
+     squeezing long company names into narrow, tall columns */
+  .exp-tab{ white-space:nowrap; flex-shrink:0; margin-left:0; border-left:none; border-bottom:2px solid transparent; margin-bottom:-2px; }
+  .exp-tab.active{ border-bottom-color:var(--light-blue);}
   .exp-panel{ padding-left:0; margin-top:20px;}
 }
 
@@ -274,50 +296,64 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
 .featured{ display:flex; flex-direction:column; gap:100px; }
 
 .feature{
-  display:grid; grid-template-columns:6fr 5fr; align-items:center; position:relative;
-  /* the image/media block and the text block sit in the SAME grid row,
-     and we flip which side they're on using nth-child below */
+  display:grid; grid-template-columns:6fr 5fr; gap:40px; align-items:center; position:relative;
+  /* text and media each get their own column; nth-child below swaps which
+     side each one lands on so projects alternate down the page */
 }
-/* even projects (2nd, 4th...): media on the left, text on the right, text right-aligned */
+/* even projects (2nd, 4th...): media on the left, text on the right.
+   The column widths flip too, so the text column stays the wider one. */
+.feature:nth-child(even){ grid-template-columns:5fr 6fr; }
 .feature:nth-child(even) .feature-media{ grid-column:1; grid-row:1; }
-.feature:nth-child(even) .feature-content{ grid-column:1; grid-row:1; text-align:right; align-items:flex-end; }
+.feature:nth-child(even) .feature-content{ grid-column:2; grid-row:1; }
 /* odd projects (1st, 3rd...): media on the right, text on the left */
 .feature:nth-child(odd) .feature-media{ grid-column:2; grid-row:1; }
-.feature:nth-child(odd) .feature-content{ grid-column:1; grid-row:1; text-align:left; align-items:flex-start; }
+.feature:nth-child(odd) .feature-content{ grid-column:1; grid-row:1; }
 
-.feature-content{ display:flex; flex-direction:column; z-index:2; position:relative; }
+.feature-content{ display:flex; flex-direction:column; align-items:flex-start; z-index:2; position:relative; }
 .feature-label{ font-family:var(--font-mono); font-size:13px; color:var(--light-blue); margin-bottom:8px; }
 .feature-title{ font-size:1.4rem; color:var(--lightest-slate); margin-bottom:16px; }
 .feature-desc{
   background:var(--light-black); padding:22px 26px; border-radius:6px;
   font-size:14.5px; box-shadow:0 10px 30px -15px var(--black-shadow);
-  max-width:460px;
+  width:100%;
 }
+.feature-desc ul{ list-style:none; }
+.feature-desc li{ position:relative; padding-left:24px; margin-bottom:12px; }
+.feature-desc li:last-child{ margin-bottom:0; }
+.feature-desc li::before{ content:'▹'; position:absolute; left:0; color:var(--light-blue); }
 .feature-tags{ display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; font-family:var(--font-mono); font-size:12px; color:var(--light-slate); list-style:none; }
-.feature-links{ display:flex; gap:16px; margin-top:16px; }
-.feature-links a{ color:var(--lightest-slate); display:inline-flex; }
+.feature-links{ display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:16px; }
+.feature-links a{ color:var(--lightest-slate); display:inline-flex; align-items:center; }
 .feature-links a:hover{ color:var(--light-blue); }
 .feature-links svg{ width:20px; height:20px; }
+.feature-links a.feature-demo{
+  font-family:var(--font-mono); font-size:13px;
+  transition:color 0.2s ease;
+}
 
 .feature-media{
   position:relative; border-radius:6px; overflow:hidden;
-  background:linear-gradient(160deg, var(--light-black), var(--black)); /* placeholder gradient — swap for a real image/screenshot */
+  background:linear-gradient(160deg, var(--light-black), var(--black)); /* fallback when no image is set */
   border:1px solid var(--lightest-black);
   aspect-ratio:16/10;
   display:flex; align-items:center; justify-content:center;
 }
-.feature-media::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background: transparent;
+.feature-media img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+}
+/* the "</>" placeholder sitting in the empty media box */
+.feature-media .glyph{
+  font-family:var(--font-mono); font-size:2rem;
+  color:var(--lightest-black);
+  user-select:none;
 }
 
 /* On small screens, stop alternating sides — just stack text above media, always. */
 @media (max-width:760px){
   .feature{ display:block; }
-  .feature-content{ text-align:left !important; align-items:flex-start !important; margin-bottom:20px; }
-  .feature-desc{ max-width:none; }
+  .feature-media{ margin-bottom:24px; }
 }
 
 /* ---- Archive: a simple responsive grid of smaller project cards ---- */
@@ -354,7 +390,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; }
   color:var(--light-blue); border:1px solid var(--light-blue); padding:16px 32px; border-radius:4px;
   transition:background 0.2s ease;
 }
-.contact-btn:hover{ background:rgba(100,255,218,0.08); }
+.contact-btn:hover{ background:var(--light-blue-tint); }
 
 footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono); font-size:12px; color:var(--slate); }
 
@@ -403,7 +439,7 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
 
     <!-- ---------- ABOUT ---------- -->
     <section class="section" id="about">
-      <div class="section-heading"><span class="num">01.</span> About Me <span class="rule"></span></div>
+      <h2 class="section-heading"><span class="num">01.</span> About Me <span class="rule"></span></h2>
       <div class="about-grid">
         <div class="section-body" id="about-text"></div>   <!-- paragraphs go here -->
         <div class="profile-photo-panel">
@@ -414,7 +450,7 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
 
     <!-- ---------- EXPERIENCE ---------- -->
     <section class="section" id="experience">
-      <div class="section-heading"><span class="num">02.</span> Experience <span class="rule"></span></div>
+      <h2 class="section-heading"><span class="num">02.</span> Experience <span class="rule"></span></h2>
       <div class="exp-wrap">
         <div class="exp-tabs" id="exp-tabs"></div>    <!-- one button per job, built from CONFIG.experience -->
         <div class="exp-panel" id="exp-panel"></div>  <!-- bullets for whichever job is currently selected -->
@@ -423,13 +459,13 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
 
     <!-- ---------- FEATURED PROJECTS ---------- -->
     <section class="section" id="projects">
-      <div class="section-heading"><span class="num">03.</span> Featured Projects <span class="rule"></span></div>
+      <h2 class="section-heading"><span class="num">03.</span> Featured Projects <span class="rule"></span></h2>
       <div class="featured" id="featured-projects"></div>  <!-- big alternating project blocks go here -->
     </section>
 
     <!-- ---------- ARCHIVE (smaller projects) ---------- -->
     <section class="section" id="archive">
-      <div class="section-heading"><span class="num">04.</span> Other Noteworthy Projects <span class="rule"></span></div>
+      <h2 class="section-heading"><span class="num">04.</span> Other Noteworthy Projects <span class="rule"></span></h2>
       <div class="archive-grid" id="archive-grid"></div>   <!-- small project cards go here -->
     </section>
 
@@ -456,10 +492,11 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
    You generally shouldn't need to touch the code past this point.
 ============================================================ */
 const CONFIG = {
+  eyebrow: "Hi, my name is",
   name: "Zexuan (Z) Wang",
   headline: "Master's student at the University of California, Riverside.",
-  blurb: "I'm a computer engineering student currenty with intrests in the intersection of hardware and software. This includes embdeeded systems, computer architecture, and artifical intelligence for edge devices.",
-  resumeUrl: "https://drive.google.com/file/d/19MtKx7BdqvghHsDuYxJqNbg2ZjNxlGZe/view?usp=sharing",   
+  blurb: "I'm a computer engineering student with interests in the intersection of hardware and software. This includes embedded systems, computer architecture, and artificial intelligence for edge devices.",
+  resumeUrl: "https://drive.google.com/file/d/19MtKx7BdqvghHsDuYxJqNbg2ZjNxlGZe/view?usp=sharing",
 
   // one entry per icon in the sidebar. "icon" must match a key in ICONS below.
   social: [
@@ -484,46 +521,86 @@ const CONFIG = {
   // one object per job/internship. Order here = order of the tab buttons.
   experience: [
     {
-      company: "Company / Lab Name",
-      role: "Your Role",
-      range: "Jun 2025 — Aug 2025",
+      company: "UCR Embedded Systems Research Lab",
+      role: "Undergraduate Research Assistant",
+      range: "Dec 2024 — Present",
       bullets: [
-        "One sentence describing something you built, debugged, or shipped.",
-        "Another concrete accomplishment — use a number if you have one.",
-        "A third bullet about a tool, team, or system you worked with."
+        "Research TCAM-integrated memory systems for accelerating tokenization workloads in AI applications.",
+        "Integrate and evaluate custom memory architectures within the gem5 simulator across ARM and RISC-V platforms.",
+        "Profile memory access behavior, bandwidth, and instruction mix via gem5 ROI and m5 instrumentation.",
+        "Develop cross-language integrations (Rust and C/C++) to support custom hardware models within real-world software stacks."
       ]
     },
     {
-      company: "Another Company",
-      role: "Your Role",
-      range: "Jan 2025 — Present",
+      company: "UCR Residential Education",
+      role: "Residential Advisor",
+      range: "Sep 2023 — Present",
       bullets: [
-        "What you're responsible for in this role.",
-        "A specific technical contribution worth mentioning."
+        "Maintain accurate resident and facility records while supporting administrative operations.",
+        "Plan and facilitate community-building and academic support events for residential students.",
+        "Provide conflict resolution and crisis support for residents, coordinating with professional staff when necessary."
+      ]
+    },
+    {
+      company: "StoneRose Management",
+      role: "Account Manager",
+      range: "Jun 2023 — Sep 2023",
+      bullets: [
+        "Developed and executed data-driven strategies with AT&T to align with client objectives.",
+        "Analyzed account performance metrics and presented recommendations to support client retention and growth.",
+        "Maintained client relationships through proactive communication and issue resolution."
       ]
     }
-    // add more { company, role, range, bullets } objects here for more jobs
   ],
 
   // the big alternating-layout project showcase
+  // image: path relative to webpage.html (e.g. "images/projects/tcam-tiktoken.png")
+  // leave image blank to show the default placeholder box
   featuredProjects: [
     {
-      label: "Featured Project",
-      title: "Project Name",
-      description: "A couple sentences on what this project is, what problem it solves, and what makes it technically interesting.",
-      tags: ["C++", "FPGA", "Verilog"],
-      repo: "#",   // GitHub link
-      demo: "#"    // live demo / video link
+      label: "Research Project",
+      title: "TCAM-Accelerated Tiktoken",
+      image: "images/projects/tcam-tiktoken.png",
+      imageAlt: "Screenshot of the TCAM-Accelerated Tiktoken project",
+      bullets: [
+        "Implemented a TCAM-backed data structure in Rust Tiktoken to accelerate lookup operations in BPE tokenization.",
+        "Performed C-injection to bridge Rust Tiktoken code with C++ TCAM models, resolving complex type and ABI constraints.",
+        "Migrated Tiktoken simulations from ARM to RISC-V in gem5, reducing simulation time by 5x while preserving correctness.",
+        "Analyzed DRAM and instruction-level statistics to identify memory bottlenecks and assess TCAM performance potential."
+      ],
+      tags: ["C++", "C", "Rust", "Python", "VS Code"],
+      repo: "https://github.com/apaya22/CS179J-GamePod",
+      demo: "https://www.youtube.com/watch?v=iiQe_L8JVrA"
     },
     {
       label: "Featured Project",
-      title: "Second Project",
-      description: "Same idea — what it does, why you built it, and any detail worth bragging about.",
-      tags: ["Python", "OpenCV"],
+      title: "GamePod",
+      image: "images/projects/gamepod.png",
+      imageAlt: "Photo of the GamePod handheld gaming console",
+      bullets: [
+        "Built an open-source retro handheld gaming console on the ESP32 with single-player, multiplayer, and Game Boy ROM emulation.",
+        "Developed graphics drivers and rendering pipelines for a 320x240 SPI LCD display, implementing sprite rendering and game object visualization.",
+        "Implemented multiplayer Tron game logic: player movement, collision detection, and elimination mechanics.",
+        "Research poster presentation."
+      ],
+      tags: ["C++", "C", "Microcontrollers"],
+      repo: "#",
+      demo: "#"
+    },
+    {
+      label: "Featured Project",
+      title: "Dance Dance Karaoke",
+      image: "images/projects/dance-dance-karaoke.png",
+      imageAlt: "Screenshot of the Dance Dance Karaoke platform",
+      bullets: [
+        "Developed an open-source karaoke and dance platform on the Jetson Nano, combining real-time choreography analysis, lyric analysis, pitch analysis, and cloud-hosted data management.",
+        "Integrated PoseNet for real-time body keypoint detection and skeletal tracking during gameplay.",
+        "Designed an angle-based pose comparison algorithm that evaluated player movements against reference choreography sequences to generate dance accuracy."
+      ],
+      tags: ["Python", "PoseNet", "Jetson Nano", "Pygame", "Google Cloud"],
       repo: "#",
       demo: "#"
     }
-    // add more project objects here — the layout auto-alternates left/right
   ],
 
   // smaller side-projects shown as compact cards
@@ -565,6 +642,7 @@ const ICONS = {
 ============================================================ */
 
 // simple text/attribute fills — one line per placeholder element
+document.getElementById('sb-eyebrow').textContent = CONFIG.eyebrow;
 document.getElementById('sb-name').textContent = CONFIG.name + ".";
 document.getElementById('sb-headline').textContent = CONFIG.headline;
 document.getElementById('sb-blurb').textContent = CONFIG.blurb;
@@ -602,50 +680,86 @@ function renderExpPanel(i){
     <span class="range">${e.range}</span>
     <ul>${e.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
   `;
-  // loop through every tab button and toggle "active" only on the clicked one
-  [...tabsEl.children].forEach((btn, idx) => btn.classList.toggle('active', idx === i));
+  // loop through every tab button and toggle "active" only on the clicked one.
+  // aria-pressed tells screen readers which job is currently showing.
+  [...tabsEl.children].forEach((btn, idx) => {
+    const selected = idx === i;
+    btn.classList.toggle('active', selected);
+    btn.setAttribute('aria-pressed', String(selected));
+  });
 }
 
 // build one <button> per job
-tabsEl.innerHTML = CONFIG.experience.map((e,i) => `<button class="exp-tab" data-i="${i}">${e.company}</button>`).join('');
+tabsEl.innerHTML = CONFIG.experience.map(e => `<button class="exp-tab" type="button" aria-pressed="false">${e.company}</button>`).join('');
 // wire up a click listener on each button that re-renders the panel for that job
 [...tabsEl.children].forEach((btn,i) => btn.addEventListener('click', () => renderExpPanel(i)));
 renderExpPanel(0); // show the first job by default when the page loads
 
+// ---- project links ----
+// Returns an empty string for a missing or placeholder ("#") URL, so a project
+// with no repo/demo yet doesn't render a link that opens a blank tab.
+function projectLink(href, label, icon){
+  if(!href || href === '#') return '';
+  return `<a href="${href}" target="_blank" rel="noopener" aria-label="${label}">${ICONS[icon]}</a>`;
+}
+
+function featuredRepoLink(href){
+  if(!href || href === '#') return '';
+  return `<a href="${href}" target="_blank" rel="noopener" aria-label="Repository">${ICONS.github}</a>`;
+}
+
+function featuredDemoLink(href, label = 'Demo link'){
+  if(!href || href === '#') return '';
+  return `<a class="feature-demo" href="${href}" target="_blank" rel="noopener">${label} ↗</a>`;
+}
+
+function renderFeatureMedia(p){
+  if(p.image){
+    return `<div class="feature-media">
+      <img src="${p.image}" alt="${p.imageAlt || p.title}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+      <span class="glyph" hidden>&lt;/&gt;</span>
+    </div>`;
+  }
+  return `<div class="feature-media"><span class="glyph">&lt;/&gt;</span></div>`;
+}
+
 // ---- featured projects ----
-document.getElementById('featured-projects').innerHTML = CONFIG.featuredProjects.map(p => `
+document.getElementById('featured-projects').innerHTML = CONFIG.featuredProjects.map(p => {
+  const body = p.bullets ? `<ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : p.description;
+  const repo = featuredRepoLink(p.repo);
+  const demo = featuredDemoLink(p.demo);
+  const links = repo + demo;
+  return `
   <div class="feature">
-    <div class="feature-media"><span class="glyph">&lt;/&gt;</span></div>
+    ${renderFeatureMedia(p)}
     <div class="feature-content">
       <div class="feature-label">${p.label}</div>
-      <div class="feature-title">${p.title}</div>
-      <div class="feature-desc">${p.description}</div>
+      <h3 class="feature-title">${p.title}</h3>
+      <div class="feature-desc">${body}</div>
       <ul class="feature-tags">${p.tags.map(t => `<li>${t}</li>`).join('')}</ul>
-      <div class="feature-links">
-        <a href="${p.repo}" target="_blank" rel="noopener" aria-label="Repository">${ICONS.github}</a>
-        <a href="${p.demo}" target="_blank" rel="noopener" aria-label="Live demo">${ICONS.external}</a>
-      </div>
+      ${links ? `<div class="feature-links">${links}</div>` : ''}
     </div>
   </div>
-`).join('');
+`;
+}).join('');
 // note: the CSS handles WHICH SIDE each project appears on (nth-child odd/even) —
 // you don't need to change anything here to control layout, just add more entries to CONFIG.featuredProjects
 
 // ---- archive grid ----
-document.getElementById('archive-grid').innerHTML = CONFIG.archiveProjects.map(p => `
+document.getElementById('archive-grid').innerHTML = CONFIG.archiveProjects.map(p => {
+  const links = projectLink(p.repo, 'Repository', 'github') + projectLink(p.demo, 'Live demo', 'external');
+  return `
   <div class="archive-card">
     <div class="archive-top">
       ${ICONS.folder}
-      <div class="links">
-        <a href="${p.repo}" target="_blank" rel="noopener" aria-label="Repository">${ICONS.github}</a>
-        <a href="${p.demo}" target="_blank" rel="noopener" aria-label="Live demo">${ICONS.external}</a>
-      </div>
+      ${links ? `<div class="links">${links}</div>` : ''}
     </div>
     <h3>${p.title}</h3>
     <p>${p.description}</p>
     <ul class="archive-tags">${p.tags.map(t => `<li>${t}</li>`).join('')}</ul>
   </div>
-`).join('');
+`;
+}).join('');
 
 // ============================================================
 // SCROLLSPY
