@@ -125,7 +125,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
    4. SIDEBAR CONTENT
 ============================================================ */
 /* the small "Hi, my name is" line above your name */
-.eyebrow-tag{ font-family:var(--font-mono); font-size:13px; color:var(--light-blue); }
+.eyebrow-tag{ font-family:var(--font-mono); font-size:16px; color:var(--light-blue); }
 
 .sidebar h1{
   font-size:clamp(1.9rem, 3.4vw, 2.6rem);
@@ -278,7 +278,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
 .exp-panel .range{ font-family:var(--font-mono); font-size:12.5px; color:var(--slate); margin-top:2px; margin-bottom:16px; display:block; }
 .exp-panel ul{ list-style:none; }
 .exp-panel li{ position:relative; padding-left:24px; margin-bottom:12px; font-size:15px; }
-.exp-panel li::before{ content:'▹'; position:absolute; left:0; color:var(--light-blue); }
+.exp-panel li::before{ content:'◇'; position:absolute; left:0; top:0.35em; color:var(--light-blue); font-size:0.85em; line-height:1; }
 
 /* On small screens, turn the tab list sideways (a horizontal scroll strip)
    instead of a vertical list, since there's not enough width for both columns. */
@@ -296,17 +296,17 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
 .featured{ display:flex; flex-direction:column; gap:100px; }
 
 .feature{
-  display:grid; grid-template-columns:6fr 5fr; gap:40px; align-items:center; position:relative;
+  display:grid; grid-template-columns:6fr 5fr; gap:40px; align-items:start; position:relative;
   /* text and media each get their own column; nth-child below swaps which
      side each one lands on so projects alternate down the page */
 }
 /* even projects (2nd, 4th...): media on the left, text on the right.
    The column widths flip too, so the text column stays the wider one. */
 .feature:nth-child(even){ grid-template-columns:5fr 6fr; }
-.feature:nth-child(even) .feature-media{ grid-column:1; grid-row:1; }
+.feature:nth-child(even) .feature-media-block{ grid-column:1; grid-row:1; }
 .feature:nth-child(even) .feature-content{ grid-column:2; grid-row:1; }
 /* odd projects (1st, 3rd...): media on the right, text on the left */
-.feature:nth-child(odd) .feature-media{ grid-column:2; grid-row:1; }
+.feature:nth-child(odd) .feature-media-block{ grid-column:2; grid-row:1; }
 .feature:nth-child(odd) .feature-content{ grid-column:1; grid-row:1; }
 
 .feature-content{ display:flex; flex-direction:column; align-items:flex-start; z-index:2; position:relative; }
@@ -320,7 +320,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
 .feature-desc ul{ list-style:none; }
 .feature-desc li{ position:relative; padding-left:24px; margin-bottom:12px; }
 .feature-desc li:last-child{ margin-bottom:0; }
-.feature-desc li::before{ content:'▹'; position:absolute; left:0; color:var(--light-blue); }
+.feature-desc li::before{ content:'◇'; position:absolute; left:0; top:0.35em; color:var(--light-blue); font-size:0.85em; line-height:1; }
 .feature-tags{ display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; font-family:var(--font-mono); font-size:12px; color:var(--light-slate); list-style:none; }
 .feature-links{ display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:16px; }
 .feature-links a{ color:var(--lightest-slate); display:inline-flex; align-items:center; }
@@ -331,6 +331,12 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   transition:color 0.2s ease;
 }
 
+.feature-media-block{ width:100%; }
+/* Invisible copy of the label + title (same margins as the real ones)
+   so the image top lines up flush with the bullet-point box. */
+.feature-media-spacer{
+  visibility:hidden; pointer-events:none;
+}
 .feature-media{
   position:relative; border-radius:6px; overflow:hidden;
   background:linear-gradient(160deg, var(--light-black), var(--black)); /* fallback when no image is set */
@@ -343,6 +349,20 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   object-fit:cover;
   display:block;
 }
+.feature-media img.lightbox-trigger{
+  cursor:zoom-in;
+  transition:opacity 0.2s ease;
+}
+.feature-media img.lightbox-trigger:hover{ opacity:0.88; }
+.feature-media-caption{
+  margin-top:10px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--slate);
+  line-height:1.45;
+}
+.feature-media-caption .feature-media-desc{ display:block; color:var(--light-slate); margin-bottom:2px; }
+.feature-media-caption .feature-media-hint{ display:block; opacity:0.85; }
 /* the "</>" placeholder sitting in the empty media box */
 .feature-media .glyph{
   font-family:var(--font-mono); font-size:2rem;
@@ -350,10 +370,41 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   user-select:none;
 }
 
+/* ---- Lightbox: click a project image to view it full-size ---- */
+.lightbox{
+  position:fixed; inset:0; z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  background:rgba(0, 0, 0, 0.82);
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity 0.2s ease, visibility 0.2s ease;
+}
+.lightbox.is-open{
+  opacity:1; visibility:visible; pointer-events:auto;
+}
+.lightbox img{
+  max-width:min(1400px, 96vw);
+  max-height:92vh;
+  width:auto; height:auto;
+  object-fit:contain;
+  border-radius:6px;
+  border:1px solid var(--lightest-black);
+  box-shadow:0 20px 60px rgba(0, 0, 0, 0.55);
+}
+.lightbox-close{
+  position:absolute; top:18px; right:22px;
+  background:transparent; border:none; cursor:pointer;
+  color:var(--lightest-slate); font-size:2rem; line-height:1;
+  padding:8px 12px; font-family:var(--font-mono);
+}
+.lightbox-close:hover{ color:var(--light-blue); }
+body.lightbox-open{ overflow:hidden; }
+
 /* On small screens, stop alternating sides — just stack text above media, always. */
 @media (max-width:760px){
   .feature{ display:block; }
-  .feature-media{ margin-bottom:24px; }
+  .feature-media-spacer{ display:none; } /* no fake header space when stacked */
+  .feature-media-block{ margin-bottom:24px; }
 }
 
 /* ---- Archive: a simple responsive grid of smaller project cards ---- */
@@ -482,6 +533,12 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
 
 </div>
 
+<!-- Full-size project image viewer (opened by clicking a featured project image) -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged project image" hidden>
+  <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <script>
 /* ============================================================
    CONFIG
@@ -556,12 +613,16 @@ const CONFIG = {
   // the big alternating-layout project showcase
   // image: path relative to webpage.html (e.g. "images/projects/tcam-tiktoken.png")
   // leave image blank to show the default placeholder box
+  // imageCaption: optional short text under the image (edit per project)
+  // imageEnlargeHint below is the shared "click to enlarge" line under every project image
+  imageEnlargeHint: "Click to enlarge",
   featuredProjects: [
     {
       label: "Research Project",
       title: "TCAM-Accelerated Tiktoken",
       image: "images/projects/tcam-tiktoken.png",
       imageAlt: "Screenshot of the TCAM-Accelerated Tiktoken project",
+      imageCaption: "Project overview figure.",
       bullets: [
         "Implemented a TCAM-backed data structure in Rust Tiktoken to accelerate lookup operations in BPE tokenization.",
         "Performed C-injection to bridge Rust Tiktoken code with C++ TCAM models, resolving complex type and ABI constraints.",
@@ -575,8 +636,9 @@ const CONFIG = {
     {
       label: "Featured Project",
       title: "GamePod",
-      image: "images/projects/gamepod.png",
+      image: "images/Game Pod Poster.png",
       imageAlt: "Photo of the GamePod handheld gaming console",
+      imageCaption: "Research poster presentation.",
       bullets: [
         "Built an open-source retro handheld gaming console on the ESP32 with single-player, multiplayer, and Game Boy ROM emulation.",
         "Developed graphics drivers and rendering pipelines for a 320x240 SPI LCD display, implementing sprite rendering and game object visualization.",
@@ -590,8 +652,9 @@ const CONFIG = {
     {
       label: "Featured Project",
       title: "Dance Dance Karaoke",
-      image: "images/projects/dance-dance-karaoke.png",
+      image: "images/Dance Dance Karaoke Poster.png",
       imageAlt: "Screenshot of the Dance Dance Karaoke platform",
+      imageCaption: "Project poster.",
       bullets: [
         "Developed an open-source karaoke and dance platform on the Jetson Nano, combining real-time choreography analysis, lyric analysis, pitch analysis, and cloud-hosted data management.",
         "Integrated PoseNet for real-time body keypoint detection and skeletal tracking during gameplay.",
@@ -714,13 +777,34 @@ function featuredDemoLink(href, label = 'Demo link'){
 }
 
 function renderFeatureMedia(p){
+  const spacer = `<div class="feature-media-spacer" aria-hidden="true">
+    <div class="feature-label">${p.label}</div>
+    <h3 class="feature-title">${p.title}</h3>
+  </div>`;
   if(p.image){
-    return `<div class="feature-media">
-      <img src="${p.image}" alt="${p.imageAlt || p.title}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
-      <span class="glyph" hidden>&lt;/&gt;</span>
+    const alt = p.imageAlt || p.title;
+    const caption = p.imageCaption
+      ? `<span class="feature-media-desc">${p.imageCaption}</span>`
+      : '';
+    const hint = CONFIG.imageEnlargeHint
+      ? `<span class="feature-media-hint">${CONFIG.imageEnlargeHint}</span>`
+      : '';
+    const captionBlock = (caption || hint)
+      ? `<p class="feature-media-caption">${caption}${hint}</p>`
+      : '';
+    return `<div class="feature-media-block">
+      ${spacer}
+      <div class="feature-media">
+        <img class="lightbox-trigger" src="${p.image}" alt="${alt}" tabindex="0" role="button" aria-label="Enlarge image: ${alt}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+        <span class="glyph" hidden>&lt;/&gt;</span>
+      </div>
+      ${captionBlock}
     </div>`;
   }
-  return `<div class="feature-media"><span class="glyph">&lt;/&gt;</span></div>`;
+  return `<div class="feature-media-block">
+    ${spacer}
+    <div class="feature-media"><span class="glyph">&lt;/&gt;</span></div>
+  </div>`;
 }
 
 // ---- featured projects ----
@@ -744,6 +828,51 @@ document.getElementById('featured-projects').innerHTML = CONFIG.featuredProjects
 }).join('');
 // note: the CSS handles WHICH SIDE each project appears on (nth-child odd/even) —
 // you don't need to change anything here to control layout, just add more entries to CONFIG.featuredProjects
+
+// ---- lightbox (enlarge featured project images) ----
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.getElementById('lightbox-close');
+
+function openLightbox(src, alt){
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || '';
+  lightbox.hidden = false;
+  // next frame so the opacity transition can run
+  requestAnimationFrame(() => lightbox.classList.add('is-open'));
+  document.body.classList.add('lightbox-open');
+  lightboxClose.focus();
+}
+
+function closeLightbox(){
+  lightbox.classList.remove('is-open');
+  document.body.classList.remove('lightbox-open');
+  const onEnd = () => {
+    lightbox.hidden = true;
+    lightboxImg.src = '';
+    lightbox.removeEventListener('transitionend', onEnd);
+  };
+  lightbox.addEventListener('transitionend', onEnd);
+}
+
+document.querySelectorAll('.lightbox-trigger').forEach(img => {
+  img.addEventListener('click', () => openLightbox(img.src, img.alt));
+  img.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      openLightbox(img.src, img.alt);
+    }
+  });
+});
+
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => {
+  // close when clicking the dark backdrop, not the image itself
+  if(e.target === lightbox) closeLightbox();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+});
 
 // ---- archive grid ----
 document.getElementById('archive-grid').innerHTML = CONFIG.archiveProjects.map(p => {
