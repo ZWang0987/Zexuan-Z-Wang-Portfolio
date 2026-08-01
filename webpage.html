@@ -86,9 +86,9 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   display:flex;
   min-height:100vh;      /* at least the full height of the browser window */
   width:100%;
-  max-width:1600px;
+  max-width:1760px;
   margin:0 auto;          /* centers the whole page on very wide screens */
-  padding:0 64px;         /* balanced left/right gutters */
+  padding:0 48px;         /* balanced left/right gutters */
 }
 
 .sidebar{
@@ -108,7 +108,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
 .main{
   flex:1;                 /* takes up all remaining horizontal space */
   min-width:0;            /* lets flex children shrink instead of overflowing */
-  padding:80px 0 120px 64px;
+  padding:80px 0 120px 56px;
 }
 
 /* Below 1080px wide (tablets/phones): stack sidebar on top of main
@@ -226,20 +226,22 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
 .section-body p{ margin-bottom:16px; max-width:64ch; font-size:15.5px; }
 .section-body strong{ color:var(--lightest-slate); font-weight:600; }
 
-/* ---- About: two-column grid (text on the left, code panel on the right) ---- */
+/* ---- About: two-column grid (text on the left, photo on the right) ---- */
 .about-grid{
-  display:grid; grid-template-columns:2fr 1fr; gap:40px; align-items:start;
-  /* 2fr 1fr = left column is twice as wide as the right column */
+  display:grid; grid-template-columns:1fr auto; gap:62px; align-items:stretch;
+  /* stretch makes the photo column match the text column height */
 }
+.about-grid .section-body p{ max-width:none; } /* use the widened layout instead of the 64ch cap */
 @media (max-width:760px){ .about-grid{ grid-template-columns:1fr; } } /* stack on small screens */
 
 /* ---- profile photo in the About section ---- */
 .profile-photo-panel{
-  width: 380px;        /* fixed width */
-  max-width: 100%;     /* still responsive on small screens */
+  width: clamp(220px, 28vw, 400px); /* scales with screen; slightly roomy vs text */
+  height:calc(100% + 56px);         /* a bit taller than the About text block */
+  align-self:stretch;
+  margin-block:-28px;               /* overhang evenly above and below the text */
   border-radius:6px;
   overflow:hidden;
-  aspect-ratio:4/5;
   background:var(--light-black);
   border:1px solid var(--lightest-black);
   box-shadow:0 10px 30px -15px var(--black-shadow);
@@ -249,6 +251,15 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   height:100%;
   object-fit:cover;
   display:block;
+}
+@media (max-width:760px){
+  .profile-photo-panel{
+    width:min(300px, 100%);
+    height:auto;
+    margin-block:0;
+    aspect-ratio:4/5; /* fixed ratio again when stacked */
+    margin-inline:auto;
+  }
 }
 
 /* ---- Experience: tab buttons on the left, content on the right ---- */
@@ -638,12 +649,11 @@ const CONFIG = {
       title: "GamePod",
       image: "images/Game Pod Poster.png",
       imageAlt: "Photo of the GamePod handheld gaming console",
-      imageCaption: "Research poster presentation.",
+      imageCaption: "Game Pod Research Poster.",
       bullets: [
         "Built an open-source retro handheld gaming console on the ESP32 with single-player, multiplayer, and Game Boy ROM emulation.",
         "Developed graphics drivers and rendering pipelines for a 320x240 SPI LCD display, implementing sprite rendering and game object visualization.",
         "Implemented multiplayer Tron game logic: player movement, collision detection, and elimination mechanics.",
-        "Research poster presentation."
       ],
       tags: ["C++", "C", "Microcontrollers"],
       repo: "#",
@@ -654,7 +664,7 @@ const CONFIG = {
       title: "Dance Dance Karaoke",
       image: "images/Dance Dance Karaoke Poster.png",
       imageAlt: "Screenshot of the Dance Dance Karaoke platform",
-      imageCaption: "Project poster.",
+      imageCaption: "Dance Dance Karaoke Research Poster.",
       bullets: [
         "Developed an open-source karaoke and dance platform on the Jetson Nano, combining real-time choreography analysis, lyric analysis, pitch analysis, and cloud-hosted data management.",
         "Integrated PoseNet for real-time body keypoint detection and skeletal tracking during gameplay.",
