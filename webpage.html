@@ -108,7 +108,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
 .main{
   flex:1;                 /* takes up all remaining horizontal space */
   min-width:0;            /* lets flex children shrink instead of overflowing */
-  padding:80px 0 120px 56px;
+  padding:80px 0 120px 35px;
 }
 
 /* Below 1080px wide (tablets/phones): stack sidebar on top of main
@@ -303,24 +303,17 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   .exp-panel{ padding-left:0; margin-top:20px;}
 }
 
-/* ---- Featured Projects: big alternating left/right layout ---- */
+/* ---- Featured Projects: description left, image right ---- */
 .featured{ display:flex; flex-direction:column; gap:100px; }
 
 .feature{
   display:grid; grid-template-columns:6fr 5fr; gap:40px; align-items:start; position:relative;
-  /* text and media each get their own column; nth-child below swaps which
-     side each one lands on so projects alternate down the page */
 }
-/* even projects (2nd, 4th...): media on the left, text on the right.
-   The column widths flip too, so the text column stays the wider one. */
-.feature:nth-child(even){ grid-template-columns:5fr 6fr; }
-.feature:nth-child(even) .feature-media-block{ grid-column:1; grid-row:1; }
-.feature:nth-child(even) .feature-content{ grid-column:2; grid-row:1; }
-/* odd projects (1st, 3rd...): media on the right, text on the left */
-.feature:nth-child(odd) .feature-media-block{ grid-column:2; grid-row:1; }
-.feature:nth-child(odd) .feature-content{ grid-column:1; grid-row:1; }
-
-.feature-content{ display:flex; flex-direction:column; align-items:flex-start; z-index:2; position:relative; }
+.feature-content{
+  grid-column:1; grid-row:1;
+  display:flex; flex-direction:column; align-items:flex-start; z-index:2; position:relative;
+}
+.feature-media-block{ grid-column:2; grid-row:1; }
 .feature-label{ font-family:var(--font-mono); font-size:13px; color:var(--light-blue); margin-bottom:8px; }
 .feature-title{ font-size:1.4rem; color:var(--lightest-slate); margin-bottom:16px; }
 .feature-desc{
@@ -360,6 +353,7 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   object-fit:cover;
   display:block;
 }
+.feature-media img.fit-contain{ object-fit:contain; }
 .feature-media img.lightbox-trigger{
   cursor:zoom-in;
   transition:opacity 0.2s ease;
@@ -389,10 +383,19 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   background:rgba(0, 0, 0, 0.82);
   opacity:0; visibility:hidden; pointer-events:none;
   transition:opacity 0.2s ease, visibility 0.2s ease;
+  overflow:hidden;
 }
 .lightbox.is-open{
   opacity:1; visibility:visible; pointer-events:auto;
 }
+.lightbox-stage{
+  max-width:min(1400px, 96vw);
+  max-height:92vh;
+  display:flex; align-items:center; justify-content:center;
+  cursor:zoom-in;
+}
+.lightbox-stage.is-zoomed{ cursor:grab; }
+.lightbox-stage.is-dragging{ cursor:grabbing; }
 .lightbox img{
   max-width:min(1400px, 96vw);
   max-height:92vh;
@@ -401,21 +404,49 @@ h1,h2,h3{ color:var(--lightest-slate); font-weight:600; line-height:1.2; }
   border-radius:6px;
   border:1px solid var(--lightest-black);
   box-shadow:0 20px 60px rgba(0, 0, 0, 0.55);
+  transform-origin:center center;
+  transition:transform 0.15s ease;
+  user-select:none;
+  -webkit-user-drag:none;
 }
+.lightbox-stage.is-dragging img{ transition:none; }
 .lightbox-close{
   position:absolute; top:18px; right:22px;
   background:transparent; border:none; cursor:pointer;
   color:var(--lightest-slate); font-size:2rem; line-height:1;
   padding:8px 12px; font-family:var(--font-mono);
+  z-index:2;
 }
 .lightbox-close:hover{ color:var(--light-blue); }
+.lightbox-controls{
+  position:absolute; bottom:22px; left:50%;
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--font-mono); font-size:13px;
+  color:var(--lightest-slate);
+  background:rgba(15, 15, 16, 0.85);
+  border:1px solid var(--lightest-black);
+  border-radius:6px;
+  padding:8px 12px;
+  z-index:2;
+}
+.lightbox-controls button{
+  background:transparent; border:1px solid var(--lightest-black);
+  color:var(--lightest-slate); cursor:pointer;
+  width:32px; height:32px; border-radius:4px;
+  font-family:var(--font-mono); font-size:18px; line-height:1;
+}
+.lightbox-controls button:hover{
+  color:var(--light-blue); border-color:var(--light-blue);
+}
+.lightbox-zoom-label{ min-width:3.5em; text-align:center; }
 body.lightbox-open{ overflow:hidden; }
 
-/* On small screens, stop alternating sides — just stack text above media, always. */
+/* On small screens, stack text above media. */
 @media (max-width:760px){
   .feature{ display:block; }
   .feature-media-spacer{ display:none; } /* no fake header space when stacked */
-  .feature-media-block{ margin-bottom:24px; }
+  .feature-media-block{ margin-top:24px; margin-bottom:0; }
 }
 
 /* ---- Archive: a simple responsive grid of smaller project cards ---- */
@@ -522,7 +553,7 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
     <!-- ---------- FEATURED PROJECTS ---------- -->
     <section class="section" id="projects">
       <h2 class="section-heading"><span class="num">03.</span> Featured Projects <span class="rule"></span></h2>
-      <div class="featured" id="featured-projects"></div>  <!-- big alternating project blocks go here -->
+      <div class="featured" id="featured-projects"></div>  <!-- project blocks: text left, image right -->
     </section>
 
     <!-- ---------- ARCHIVE (smaller projects) ---------- -->
@@ -547,7 +578,14 @@ footer{ text-align:center; padding:32px 24px 60px; font-family:var(--font-mono);
 <!-- Full-size project image viewer (opened by clicking a featured project image) -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged project image" hidden>
   <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image">&times;</button>
-  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-stage" id="lightbox-stage">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+  <div class="lightbox-controls" aria-label="Zoom controls">
+    <button type="button" id="lightbox-zoom-out" aria-label="Zoom out">−</button>
+    <span class="lightbox-zoom-label" id="lightbox-zoom-label">100%</span>
+    <button type="button" id="lightbox-zoom-in" aria-label="Zoom in">+</button>
+  </div>
 </div>
 
 <script>
@@ -621,19 +659,21 @@ const CONFIG = {
     }
   ],
 
-  // the big alternating-layout project showcase
+  // featured project showcase (description left, image right)
   // image: path relative to webpage.html (e.g. "images/projects/tcam-tiktoken.png")
   // leave image blank to show the default placeholder box
   // imageCaption: optional short text under the image (edit per project)
+  // imageFit: "cover" (crop to fill, default) or "contain" (show full image, may letterbox)
   // imageEnlargeHint below is the shared "click to enlarge" line under every project image
   imageEnlargeHint: "Click to enlarge",
   featuredProjects: [
     {
       label: "Research Project",
       title: "TCAM-Accelerated Tiktoken",
-      image: "images/projects/tcam-tiktoken.png",
-      imageAlt: "Screenshot of the TCAM-Accelerated Tiktoken project",
-      imageCaption: "Project overview figure.",
+      image: "images/tcam stock image.png",
+      imageAlt: "Generic TCAM information stock image",
+      imageCaption: "CAM/TCAM Overview Figure.",
+      imageFit: "contain",
       bullets: [
         "Implemented a TCAM-backed data structure in Rust Tiktoken to accelerate lookup operations in BPE tokenization.",
         "Performed C-injection to bridge Rust Tiktoken code with C++ TCAM models, resolving complex type and ABI constraints.",
@@ -641,29 +681,29 @@ const CONFIG = {
         "Analyzed DRAM and instruction-level statistics to identify memory bottlenecks and assess TCAM performance potential."
       ],
       tags: ["C++", "C", "Rust", "Python", "VS Code"],
-      repo: "https://github.com/apaya22/CS179J-GamePod",
-      demo: "https://www.youtube.com/watch?v=iiQe_L8JVrA"
+      repo: "#",
+      demo: "#"
     },
     {
       label: "Featured Project",
       title: "GamePod",
       image: "images/Game Pod Poster.png",
-      imageAlt: "Photo of the GamePod handheld gaming console",
-      imageCaption: "Game Pod Research Poster.",
+      imageAlt: "Photo of the GamePod research poster",
+      imageCaption: "GamePod Research Poster.",
       bullets: [
         "Built an open-source retro handheld gaming console on the ESP32 with single-player, multiplayer, and Game Boy ROM emulation.",
         "Developed graphics drivers and rendering pipelines for a 320x240 SPI LCD display, implementing sprite rendering and game object visualization.",
         "Implemented multiplayer Tron game logic: player movement, collision detection, and elimination mechanics.",
       ],
       tags: ["C++", "C", "Microcontrollers"],
-      repo: "#",
+      repo: "https://github.com/apaya22/CS179J-GamePod",
       demo: "#"
     },
     {
       label: "Featured Project",
       title: "Dance Dance Karaoke",
       image: "images/Dance Dance Karaoke Poster.png",
-      imageAlt: "Screenshot of the Dance Dance Karaoke platform",
+      imageAlt: "Photo of the Dance Dance Karaoke research poster",
       imageCaption: "Dance Dance Karaoke Research Poster.",
       bullets: [
         "Developed an open-source karaoke and dance platform on the Jetson Nano, combining real-time choreography analysis, lyric analysis, pitch analysis, and cloud-hosted data management.",
@@ -671,7 +711,7 @@ const CONFIG = {
         "Designed an angle-based pose comparison algorithm that evaluated player movements against reference choreography sequences to generate dance accuracy."
       ],
       tags: ["Python", "PoseNet", "Jetson Nano", "Pygame", "Google Cloud"],
-      repo: "#",
+      repo: "https://github.com/edwardalmaraz/Dance-Dance-Karaoke-CS131",
       demo: "#"
     }
   ],
@@ -793,6 +833,7 @@ function renderFeatureMedia(p){
   </div>`;
   if(p.image){
     const alt = p.imageAlt || p.title;
+    const fitClass = p.imageFit === 'contain' ? ' fit-contain' : '';
     const caption = p.imageCaption
       ? `<span class="feature-media-desc">${p.imageCaption}</span>`
       : '';
@@ -805,7 +846,7 @@ function renderFeatureMedia(p){
     return `<div class="feature-media-block">
       ${spacer}
       <div class="feature-media">
-        <img class="lightbox-trigger" src="${p.image}" alt="${alt}" tabindex="0" role="button" aria-label="Enlarge image: ${alt}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+        <img class="lightbox-trigger${fitClass}" src="${p.image}" alt="${alt}" tabindex="0" role="button" aria-label="Enlarge image: ${alt}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
         <span class="glyph" hidden>&lt;/&gt;</span>
       </div>
       ${captionBlock}
@@ -825,7 +866,6 @@ document.getElementById('featured-projects').innerHTML = CONFIG.featuredProjects
   const links = repo + demo;
   return `
   <div class="feature">
-    ${renderFeatureMedia(p)}
     <div class="feature-content">
       <div class="feature-label">${p.label}</div>
       <h3 class="feature-title">${p.title}</h3>
@@ -833,18 +873,59 @@ document.getElementById('featured-projects').innerHTML = CONFIG.featuredProjects
       <ul class="feature-tags">${p.tags.map(t => `<li>${t}</li>`).join('')}</ul>
       ${links ? `<div class="feature-links">${links}</div>` : ''}
     </div>
+    ${renderFeatureMedia(p)}
   </div>
 `;
 }).join('');
-// note: the CSS handles WHICH SIDE each project appears on (nth-child odd/even) —
-// you don't need to change anything here to control layout, just add more entries to CONFIG.featuredProjects
+// layout is always description left / image right — add more entries in CONFIG.featuredProjects as needed
 
 // ---- lightbox (enlarge featured project images) ----
 const lightbox = document.getElementById('lightbox');
+const lightboxStage = document.getElementById('lightbox-stage');
 const lightboxImg = document.getElementById('lightbox-img');
 const lightboxClose = document.getElementById('lightbox-close');
+const lightboxZoomIn = document.getElementById('lightbox-zoom-in');
+const lightboxZoomOut = document.getElementById('lightbox-zoom-out');
+const lightboxZoomLabel = document.getElementById('lightbox-zoom-label');
+
+const LIGHTBOX_MIN_ZOOM = 1;
+const LIGHTBOX_MAX_ZOOM = 4;
+const LIGHTBOX_ZOOM_STEP = 0.25;
+let lightboxZoom = 1;
+let lightboxPanX = 0;
+let lightboxPanY = 0;
+let lightboxDragging = false;
+let lightboxDragStartX = 0;
+let lightboxDragStartY = 0;
+let lightboxPanStartX = 0;
+let lightboxPanStartY = 0;
+
+function applyLightboxTransform(){
+  lightboxImg.style.transform = `translate(${lightboxPanX}px, ${lightboxPanY}px) scale(${lightboxZoom})`;
+  lightboxZoomLabel.textContent = `${Math.round(lightboxZoom * 100)}%`;
+  lightboxStage.classList.toggle('is-zoomed', lightboxZoom > 1);
+}
+
+function resetLightboxZoom(){
+  lightboxZoom = 1;
+  lightboxPanX = 0;
+  lightboxPanY = 0;
+  lightboxDragging = false;
+  lightboxStage.classList.remove('is-dragging', 'is-zoomed');
+  applyLightboxTransform();
+}
+
+function setLightboxZoom(nextZoom){
+  lightboxZoom = Math.min(LIGHTBOX_MAX_ZOOM, Math.max(LIGHTBOX_MIN_ZOOM, nextZoom));
+  if(lightboxZoom === 1){
+    lightboxPanX = 0;
+    lightboxPanY = 0;
+  }
+  applyLightboxTransform();
+}
 
 function openLightbox(src, alt){
+  resetLightboxZoom();
   lightboxImg.src = src;
   lightboxImg.alt = alt || '';
   lightbox.hidden = false;
@@ -857,6 +938,7 @@ function openLightbox(src, alt){
 function closeLightbox(){
   lightbox.classList.remove('is-open');
   document.body.classList.remove('lightbox-open');
+  resetLightboxZoom();
   const onEnd = () => {
     lightbox.hidden = true;
     lightboxImg.src = '';
@@ -875,13 +957,70 @@ document.querySelectorAll('.lightbox-trigger').forEach(img => {
   });
 });
 
+lightboxZoomIn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  setLightboxZoom(lightboxZoom + LIGHTBOX_ZOOM_STEP);
+});
+lightboxZoomOut.addEventListener('click', (e) => {
+  e.stopPropagation();
+  setLightboxZoom(lightboxZoom - LIGHTBOX_ZOOM_STEP);
+});
+
+lightbox.addEventListener('wheel', (e) => {
+  if(!lightbox.classList.contains('is-open')) return;
+  e.preventDefault();
+  const direction = e.deltaY < 0 ? 1 : -1;
+  setLightboxZoom(lightboxZoom + direction * LIGHTBOX_ZOOM_STEP);
+}, { passive: false });
+
+lightboxStage.addEventListener('dblclick', (e) => {
+  e.stopPropagation();
+  if(lightboxZoom > 1) setLightboxZoom(1);
+  else setLightboxZoom(2);
+});
+
+lightboxStage.addEventListener('pointerdown', (e) => {
+  if(lightboxZoom <= 1 || e.button !== 0) return;
+  e.preventDefault();
+  lightboxDragging = true;
+  lightboxDragStartX = e.clientX;
+  lightboxDragStartY = e.clientY;
+  lightboxPanStartX = lightboxPanX;
+  lightboxPanStartY = lightboxPanY;
+  lightboxStage.classList.add('is-dragging');
+  lightboxStage.setPointerCapture(e.pointerId);
+});
+
+lightboxStage.addEventListener('pointermove', (e) => {
+  if(!lightboxDragging) return;
+  lightboxPanX = lightboxPanStartX + (e.clientX - lightboxDragStartX);
+  lightboxPanY = lightboxPanStartY + (e.clientY - lightboxDragStartY);
+  applyLightboxTransform();
+});
+
+function endLightboxDrag(e){
+  if(!lightboxDragging) return;
+  lightboxDragging = false;
+  lightboxStage.classList.remove('is-dragging');
+  if(e && e.pointerId != null){
+    try{ lightboxStage.releasePointerCapture(e.pointerId); }catch(_){ /* already released */ }
+  }
+}
+
+lightboxStage.addEventListener('pointerup', endLightboxDrag);
+lightboxStage.addEventListener('pointercancel', endLightboxDrag);
+
 lightboxClose.addEventListener('click', closeLightbox);
 lightbox.addEventListener('click', (e) => {
-  // close when clicking the dark backdrop, not the image itself
+  // close when clicking the dark backdrop, not the image/controls
   if(e.target === lightbox) closeLightbox();
 });
 document.addEventListener('keydown', (e) => {
-  if(e.key === 'Escape' && lightbox.classList.contains('is-open')) closeLightbox();
+  if(!lightbox.classList.contains('is-open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === '+' || e.key === '=') setLightboxZoom(lightboxZoom + LIGHTBOX_ZOOM_STEP);
+  if(e.key === '-' || e.key === '_') setLightboxZoom(lightboxZoom - LIGHTBOX_ZOOM_STEP);
+  if(e.key === '0') setLightboxZoom(1);
 });
 
 // ---- archive grid ----
